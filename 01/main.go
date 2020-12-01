@@ -8,10 +8,14 @@ import (
 
 func part1(expenses []int) int {
 	fmt.Println("Part 1")
-	for _, i := range expenses {
-		for _, j := range expenses {
-			if (i + j) == 2020 {
-				return i * j
+
+	for i := 0; i < len(expenses); i++ {
+		for j := i + 1; j < len(expenses); j++ {
+			first := expenses[i]
+			second := expenses[j]
+
+			if first+second == 2020 {
+				return first * second
 			}
 		}
 	}
@@ -22,11 +26,15 @@ func part1(expenses []int) int {
 func part2(expenses []int) int {
 	fmt.Println("Part 2")
 
-	for _, i := range expenses {
-		for _, j := range expenses {
-			for _, k := range expenses {
-				if (i + j + k) == 2020 {
-					return i * j * k
+	for i := 0; i < len(expenses); i++ {
+		for j := i + 1; j < len(expenses); j++ {
+			for k := j + 1; k < len(expenses); k++ {
+				first := expenses[i]
+				second := expenses[j]
+				third := expenses[k]
+
+				if first+second+third == 2020 {
+					return first * second * third
 				}
 			}
 		}

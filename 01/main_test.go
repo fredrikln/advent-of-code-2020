@@ -13,7 +13,7 @@ func Test_part1(t *testing.T) {
 		args args
 		want int
 	}{
-		{"Example", args{[]int{1721, 979, 366, 299, 675, 1456}}, 514579},
+		{"Example", args{[]int{366, 675, 1456, 979, 299, 1721}}, 514579},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -33,7 +33,7 @@ func Test_part2(t *testing.T) {
 		args args
 		want int
 	}{
-		{"Example", args{[]int{1721, 979, 366, 299, 675, 1456}}, 241861950},
+		{"Example", args{[]int{299, 1456, 1721, 979, 366, 675}}, 241861950},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
