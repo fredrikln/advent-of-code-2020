@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
-	"strings"
 
 	"github.com/fredrikln/advent-of-code-2020/utils"
 )
@@ -20,20 +18,17 @@ func main() {
 	fmt.Println(result2)
 }
 
+func parseLine(line string) (min int, max int, letter string, password string) {
+	fmt.Sscanf(line, "%d-%d %1s: %s", &min, &max, &letter, &password)
+
+	return min, max, letter, password
+}
+
 func part1(input []string) int {
 	countValid := 0
 
 	for _, line := range input {
-		parts := strings.Split(line, " ")
-
-		minMax := strings.Split(parts[0], "-")
-
-		min, _ := strconv.Atoi(minMax[0])
-		max, _ := strconv.Atoi(minMax[1])
-
-		letter := string(parts[1][0])
-
-		password := parts[2]
+		min, max, letter, password := parseLine(line)
 
 		counts := make(map[string]int)
 		for i := 0; i < len(password); i++ {
@@ -54,16 +49,7 @@ func part2(input []string) int {
 	countValid := 0
 
 	for _, line := range input {
-		parts := strings.Split(line, " ")
-
-		minMax := strings.Split(parts[0], "-")
-
-		min, _ := strconv.Atoi(minMax[0])
-		max, _ := strconv.Atoi(minMax[1])
-
-		letter := string(parts[1][0])
-
-		password := parts[2]
+		min, max, letter, password := parseLine(line)
 
 		if (string(password[min-1]) == letter || string(password[max-1]) == letter) && string(password[min-1]) != string(password[max-1]) {
 			countValid++
