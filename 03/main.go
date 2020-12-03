@@ -19,28 +19,12 @@ func main() {
 	fmt.Println(result2)
 }
 
-type coord struct {
-	x int
-	y int
-}
-
 func part1(input []string, xSpeed int, ySpeed int) int {
-	trees := make(map[coord]bool)
-
-	for y, line := range input {
-		for x, tile := range strings.Split(line, "") {
-			if tile == "#" {
-				trees[coord{x, y}] = true
-			}
-		}
-	}
-
-	x := 0
 	treesHit := 0
+	x := 0
 	for y := 0; y < len(input); y += ySpeed {
-		coord := coord{x: x % len(input[0]), y: y}
-		_, ok := trees[coord]
-		if ok {
+		line := strings.Split(input[y], "")
+		if line[x%len(input[y])] == "#" {
 			treesHit++
 		}
 		x += xSpeed
