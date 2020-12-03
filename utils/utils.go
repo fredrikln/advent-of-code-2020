@@ -1,40 +1,41 @@
 package utils
 
 import (
-	"bufio"
-	"fmt"
 	"io/ioutil"
-	"os"
 	"strconv"
 	"strings"
 )
 
 // ReadInput reads file's lines into array of strings
 func ReadInput() []string {
-	var input []string
-
-	f, _ := os.Open("input.txt")
-	defer f.Close()
-	scanner := bufio.NewScanner(f)
-
-	for scanner.Scan() {
-		input = append(input, scanner.Text())
+	bytes, err := ioutil.ReadFile("input.txt")
+	if err != nil {
+		panic(err)
 	}
 
-	return input
+	contents := string(bytes)
+
+	lines := strings.Split(contents, "\r\n")
+	lines = lines[:len(lines)-1]
+
+	return lines
 }
 
 // ReadInputLinesAsNumbers reads file's lines into an array of numbers
 func ReadInputLinesAsNumbers() []int {
 	var input []int
 
-	f, _ := os.Open("input.txt")
-	defer f.Close()
-	scanner := bufio.NewScanner(f)
+	bytes, err := ioutil.ReadFile("input.txt")
+	if err != nil {
+		panic(err)
+	}
 
-	for scanner.Scan() {
-		var n int
-		_, err := fmt.Sscanf(scanner.Text(), "%d", &n)
+	contents := strings.Trim(string(bytes), "\r\n")
+
+	lines := strings.Split(contents, "\r\n")
+
+	for _, s := range lines {
+		n, err := strconv.Atoi(s)
 		if err != nil {
 			panic(err)
 		}
@@ -56,7 +57,7 @@ func ReadInputAsNumbers() []int {
 
 	text := strings.Trim(string(content), "\r\n")
 
-	tokens := strings.Split(text, ", ")
+	tokens := strings.Split(text, ",")
 
 	for _, i := range tokens {
 		val, _ := strconv.Atoi(i)
