@@ -7,8 +7,11 @@ import (
 )
 
 // ReadInput reads file's lines into array of strings
-func ReadInput() []string {
-	bytes, err := ioutil.ReadFile("input.txt")
+func ReadInput(filename string) []string {
+	if filename == "" {
+		filename = "input.txt"
+	}
+	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}

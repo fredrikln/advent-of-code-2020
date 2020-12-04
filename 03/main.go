@@ -49,7 +49,7 @@ func part2(input []string) int {
 
 	product := 1
 	for _, slope := range slopes {
-		product = product * part1(input, slope.xSpeed, slope.ySpeed)
+		product *= part1(input, slope.xSpeed, slope.ySpeed)
 	}
 
 	return product
