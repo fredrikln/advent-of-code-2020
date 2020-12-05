@@ -21,25 +21,13 @@ func main() {
 	fmt.Println("My seat id:", result2)
 }
 
-func convertRow(row string) int {
-	part := row[:7]
-	part = strings.ReplaceAll(part, "F", "0")
-	part = strings.ReplaceAll(part, "B", "1")
+func getID(row string) int {
+	row = strings.ReplaceAll(row, "F", "0")
+	row = strings.ReplaceAll(row, "B", "1")
+	row = strings.ReplaceAll(row, "L", "0")
+	row = strings.ReplaceAll(row, "R", "1")
 
-	number, err := strconv.ParseInt(part, 2, 8)
-	if err != nil {
-		panic(err)
-	}
-
-	return int(number)
-}
-
-func convertColumn(column string) int {
-	part := column[7:]
-	part = strings.ReplaceAll(part, "L", "0")
-	part = strings.ReplaceAll(part, "R", "1")
-
-	number, err := strconv.ParseInt(part, 2, 8)
+	number, err := strconv.ParseInt(row, 2, 32)
 	if err != nil {
 		panic(err)
 	}
@@ -50,9 +38,7 @@ func convertColumn(column string) int {
 func part1(input []string) int {
 	highest := 0
 	for _, line := range input {
-		row := convertRow(line)
-		col := convertColumn(line)
-		id := row*8 + col
+		id := getID(line)
 
 		if id > highest {
 			highest = id
@@ -65,9 +51,7 @@ func part2(input []string) int {
 	seats := make([]int, 0)
 
 	for _, line := range input {
-		row := convertRow(line)
-		col := convertColumn(line)
-		id := row*8 + col
+		id := getID(line)
 
 		seats = append(seats, id)
 	}
