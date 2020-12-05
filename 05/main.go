@@ -22,12 +22,10 @@ func main() {
 }
 
 func getID(row string) int {
-	row = strings.ReplaceAll(row, "F", "0")
-	row = strings.ReplaceAll(row, "B", "1")
-	row = strings.ReplaceAll(row, "L", "0")
-	row = strings.ReplaceAll(row, "R", "1")
+	replacer := strings.NewReplacer("F", "0", "B", "1", "L", "0", "R", "1")
+	row = replacer.Replace(row)
 
-	number, err := strconv.ParseInt(row, 2, 32)
+	number, err := strconv.ParseInt(row, 2, 0)
 	if err != nil {
 		panic(err)
 	}
