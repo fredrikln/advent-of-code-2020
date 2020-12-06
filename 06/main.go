@@ -30,14 +30,6 @@ func parseGroups(input []string) []group {
 	questions := make(map[string]int)
 
 	for _, line := range input {
-		if line != "" {
-			countPeople++
-
-			for _, letter := range line {
-				questions[string(letter)]++
-			}
-		}
-
 		if line == "" {
 			// save
 			groups = append(groups, group{countPeople, questions})
@@ -45,6 +37,14 @@ func parseGroups(input []string) []group {
 			// reset
 			countPeople = 0
 			questions = make(map[string]int)
+
+			continue
+		}
+
+		countPeople++
+
+		for _, letter := range line {
+			questions[string(letter)]++
 		}
 	}
 
