@@ -20,14 +20,14 @@ func main() {
 
 type group struct {
 	people    int
-	questions map[string]int
+	questions map[rune]int
 }
 
 func parseGroups(input []string) []group {
 	groups := make([]group, 0)
 
 	var countPeople int
-	questions := make(map[string]int)
+	questions := make(map[rune]int)
 
 	for _, line := range input {
 		if line == "" {
@@ -36,7 +36,7 @@ func parseGroups(input []string) []group {
 
 			// reset
 			countPeople = 0
-			questions = make(map[string]int)
+			questions = make(map[rune]int)
 
 			continue
 		}
@@ -44,7 +44,7 @@ func parseGroups(input []string) []group {
 		countPeople++
 
 		for _, letter := range line {
-			questions[string(letter)]++
+			questions[letter]++
 		}
 	}
 
