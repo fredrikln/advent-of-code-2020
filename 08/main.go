@@ -20,77 +20,90 @@ func main() {
 	fmt.Println("Accumulator:", result2)
 }
 
-type instruction struct {
-	instruction string
-	value       int
-	timesRun    int
+// Instruction is a single instruction
+type Instruction struct {
+	Op       string
+	Value    int
+	TimesRun int
 }
 
-func parseInstructions(data []string) []*instruction {
-	instructions := make([]*instruction, 0)
-	for _, line := range data {
+// VirtualMachine is a virtual machine
+type VirtualMachine struct {
+	Program        []Instruction
+	ProgramCounter int
+	Accumulator    int
+}
+
+// NewVirtualMachine parses a string slice into instructions and returns a virtual machine
+func NewVirtualMachine(program []string) VirtualMachine {
+	vm := VirtualMachine{}
+
+	for _, line := range program {
 		split := strings.Split(line, " ")
 		val, _ := strconv.Atoi(split[1])
 
-		ins := instruction{split[0], val, 0}
+		ins := Instruction{split[0], val, 0}
 
-		instructions = append(instructions, &ins)
+		vm.Program = append(vm.Program, ins)
 	}
-	return instructions
+
+	return vm
 }
 
-func runProgram(instructions []*instruction) (int, int) {
-	var acc int
-	var ptr int
-
+// Run runs the program and returns the Accumulator and ProgramCounter on completion
+func (vm *VirtualMachine) Run() (int, int) {
 	for {
-		if ptr == len(instructions) {
+		// Exit if we try to run instruction outside of program
+		if vm.ProgramCounter >= len(vm.Program) {
 			break
 		}
 
-		ins := instructions[ptr]
+		// Get pointer to current instruction and increase the amount of times we've run it
+		ins := &vm.Program[vm.ProgramCounter]
+		ins.TimesRun++
 
-		ins.timesRun++
-
-		if ins.timesRun > 1 {
+		// If ran more than one we exit
+		if ins.TimesRun > 1 {
 			break
 		}
 
-		switch ins.instruction {
+		// Implement instructions
+		switch ins.Op {
 		case "nop":
-			ptr++
+			vm.ProgramCounter++
 		case "jmp":
-			ptr += ins.value
+			vm.ProgramCounter += ins.Value
 		case "acc":
-			ptr++
-			acc += ins.value
+			vm.ProgramCounter++
+			vm.Accumulator += ins.Value
 		}
 	}
 
-	return acc, ptr
+	// On exit return current accumulator and program counter
+	return vm.Accumulator, vm.ProgramCounter
 }
 
 func part1(program []string) int {
-	instructions := parseInstructions(program)
+	vm := NewVirtualMachine(program)
 
-	acc, _ := runProgram(instructions)
+	acc, _ := vm.Run()
 
 	return acc
 }
 
 func part2(program []string) int {
 	for i := 0; i < len(program); i++ {
-		instructions := parseInstructions(program)
+		vm := NewVirtualMachine(program)
 
-		ins := instructions[i]
+		ins := &vm.Program[i]
 
-		if ins.instruction == "nop" {
-			ins.instruction = "jmp"
-		} else if ins.instruction == "jmp" {
-			ins.instruction = "nop"
+		if ins.Op == "nop" {
+			ins.Op = "jmp"
+		} else if ins.Op == "jmp" {
+			ins.Op = "nop"
 		}
 
-		acc, ptr := runProgram(instructions)
+		acc, ptr := vm.Run()
 
 		if ptr == len(program) {
 			return acc
