@@ -22,36 +22,57 @@ func main() {
 
 // Instruction is a single instruction
 type Instruction struct {
-	Op       string
-	Value    int
-	TimesRun int
+	Opcode  string
+	Operand int
 }
 
-// VirtualMachine is a virtual machine
-type VirtualMachine struct {
+// VM is a virtual machine
+type VM struct {
 	Program        []Instruction
 	ProgramCounter int
 	Accumulator    int
 }
 
-// NewVirtualMachine parses a string slice into instructions and returns a virtual machine
-func NewVirtualMachine(program []string) VirtualMachine {
-	vm := VirtualMachine{}
-
+// Load parses a string slice into instructions and returns a virtual machine
+func (vm *VM) Load(program []string) {
 	for _, line := range program {
 		split := strings.Split(line, " ")
-		val, _ := strconv.Atoi(split[1])
+		opcode := split[0]
+		operand, _ := strconv.Atoi(split[1])
 
-		ins := Instruction{split[0], val, 0}
+		ins := Instruction{opcode, operand}
 
 		vm.Program = append(vm.Program, ins)
 	}
-
-	return vm
 }
 
-// Run runs the program and returns the Accumulator and ProgramCounter on completion
-func (vm *VirtualMachine) Run() (int, int) {
+// Step step the VM forward 1 pc
+func (vm *VM) Step() {
+	ins := &vm.Program[vm.ProgramCounter]
+
+	switch ins.Opcode {
+	case "nop":
+		vm.ProgramCounter++
+	case "jmp":
+		vm.ProgramCounter += ins.Operand
+	case "acc":
+		vm.ProgramCounter++
+		vm.Accumulator += ins.Operand
+	}
+}
+
+// PrintCurrentState prints current operation
+func (vm *VM) PrintCurrentState() {
+	pc := vm.ProgramCounter
+	instruction := vm.Program[pc]
+
+	fmt.Printf("pc: %5d :: instruction: %s % 5d :: accumulator: % 5d\n", pc, instruction.Opcode, instruction.Operand, vm.Accumulator)
+}
+
+// RunVM runs the program and returns the Accumulator and ProgramCounter on completion
+func runVM(vm VM, printState bool) (int, int) {
+	timesRun := make(map[int]int)
+
 	for {
 		// Exit if we try to run instruction outside of program
 		if vm.ProgramCounter >= len(vm.Program) {
@@ -59,24 +80,19 @@ func (vm *VirtualMachine) Run() (int, int) {
 		}
 
 		// Get pointer to current instruction and increase the amount of times we've run it
-		ins := &vm.Program[vm.ProgramCounter]
-		ins.TimesRun++
+		timesRun[vm.ProgramCounter]++
 
-		// If ran more than one we exit
-		if ins.TimesRun > 1 {
+		// If instruction ran more than once we exit
+		if timesRun[vm.ProgramCounter] > 1 {
 			break
 		}
 
-		// Implement instructions
-		switch ins.Op {
-		case "nop":
-			vm.ProgramCounter++
-		case "jmp":
-			vm.ProgramCounter += ins.Value
-		case "acc":
-			vm.ProgramCounter++
-			vm.Accumulator += ins.Value
+		if printState {
+			vm.PrintCurrentState()
 		}
+
+		// Implement instructions
+		vm.Step()
 	}
 
 	// On exit return current accumulator and program counter
@@ -84,26 +100,35 @@ func (vm *VirtualMachine) Run() (int, int) {
 }
 
 func part1(program []string) int {
-	vm := NewVirtualMachine(program)
+	vm := VM{}
+	vm.Load(program)
 
-	acc, _ := vm.Run()
+	acc, _ := runVM(vm, false)
 
 	return acc
 }
 
 func part2(program []string) int {
+	var numProgramsTested int
 	for i := 0; i < len(program); i++ {
-		vm := NewVirtualMachine(program)
+		if program[i][:3] != "nop" && program[i][:3] != "jmp" {
+			continue
+		}
+
+		numProgramsTested++
+
+		vm := VM{}
+		vm.Load(program)
 
 		ins := &vm.Program[i]
 
-		if ins.Op == "nop" {
-			ins.Op = "jmp"
-		} else if ins.Op == "jmp" {
-			ins.Op = "nop"
+		if ins.Opcode == "nop" {
+			ins.Opcode = "jmp"
+		} else if ins.Opcode == "jmp" {
+			ins.Opcode = "nop"
 		}
 
-		acc, ptr := vm.Run()
+		acc, ptr := runVM(vm, false)
 
 		if ptr == len(program) {
 			return acc
