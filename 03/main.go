@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	input := utils.ReadInput()
+	input := utils.ReadInput("input.txt")
 
 	fmt.Println("Part 1")
 	result1 := part1(input, 3, 1)
