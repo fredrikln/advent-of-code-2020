@@ -11,7 +11,7 @@ func main() {
 	input := utils.ReadInputLinesAsNumbers()
 
 	fmt.Println("Part 1")
-	result := part1(input)
+	result := part1(input, 25)
 	fmt.Println("First invalid:", result)
 
 	fmt.Println("Part 2")
@@ -48,21 +48,31 @@ func isValidNumber(previous []int, number int, preamble int) bool {
 	return false
 }
 
-func sum(numbers []int) int {
-	var sum int
+func findContiguous(numbers []int, number int) []int {
+	runningSum := make([]int, len(numbers))
 
-	for _, i := range numbers {
-		sum += i
+	var sum int
+	for i, n := range numbers {
+		sum += n
+		runningSum[i] = sum
 	}
 
-	return sum
-}
-
-func findContiguous(numbers []int, number int) []int {
 	for i := 2; i < number/2; i++ {
-		for j := 0; j < len(numbers)-i; j++ {
-			if sum(numbers[j:j+i]) == number {
-				return numbers[j : j+i]
+		for j := i; j < len(numbers)-i; j++ {
+			if runningSum[j]-runningSum[j-i] == number {
+				// j-i+1 : j-i is the number before the range of numbers that sum up to the one I want
+				// j+1 : I want the numbers up to and including one I'm standing on, Go end-index indexing is exclusive
+				// Example: I want to know what the sum numbers of index 3 to 5 (three numbers)
+				//          Sum at index 5 is 15, sum at index 5-(three)=2 is 3, 15 - 3 is 12
+				//          This is the number we want, let's get the actual numbers:
+				//          5-3 is before the first number we want, so we want to start at (j-i)+1
+				//          Also we want to include the one we're at, Go's indexing for the second parameter is exclusive, so we need to get j+1
+				//          This gives the numbers 3,4 and 5, which summed gives 12.
+				// 1 2 3  4  5
+				// 1 3 6 10 15
+				//   |       |
+				//   j       i
+				return numbers[j-i+1 : j+1]
 			}
 		}
 	}
@@ -85,8 +95,8 @@ func minMax(numbers []int) (int, int) {
 	return min, max
 }
 
-func part1(numbers []int) int {
-	return firstInvalid(numbers, 25)
+func part1(numbers []int, preambleLength int) int {
+	return firstInvalid(numbers, preambleLength)
 }
 
 func part2(numbers []int, number int) int {
