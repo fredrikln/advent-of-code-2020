@@ -24,7 +24,7 @@ func firstInvalid(numbers []int, preamble int) int {
 	copy(numbersSoFar, numbers[:preamble])
 
 	for _, n := range numbers[preamble:] {
-		if !isValidNumber(numbersSoFar, n, preamble) {
+		if !isValidNumber(numbersSoFar[len(numbersSoFar)-preamble:], n) {
 			return n
 		}
 
@@ -34,9 +34,7 @@ func firstInvalid(numbers []int, preamble int) int {
 	return 0
 }
 
-func isValidNumber(previous []int, number int, preamble int) bool {
-	numbersToConsider := previous[len(previous)-preamble:]
-
+func isValidNumber(numbersToConsider []int, number int) bool {
 	for i := 0; i < len(numbersToConsider); i++ {
 		for j := i + 1; j < len(numbersToConsider); j++ {
 			if numbersToConsider[i]+numbersToConsider[j] == number {
